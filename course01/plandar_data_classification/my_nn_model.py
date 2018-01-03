@@ -3,7 +3,28 @@ import matplotlib.pyplot as plt
 from testCases_v2 import *
 from planar_utils import plot_decision_boundary, sigmoid, load_planar_dataset, load_extra_datasets
 
-X, Y = load_planar_dataset()
+# X, Y = load_planar_dataset()
+
+noisy_circles, noisy_moons, blobs, gaussian_quantiles, no_structure = load_extra_datasets()
+
+datasets = {"noisy_circles": noisy_circles,
+            "noisy_moons": noisy_moons,
+            "blobs": blobs,
+            "gaussian_quantiles": gaussian_quantiles}
+
+dataset = "gaussian_quantiles"
+
+X, Y = datasets[dataset]
+X, Y = X.T, Y.reshape(1, Y.shape[0])
+
+# make blobs binary
+if dataset == "blobs":
+    Y = Y % 2
+
+
+# Visualize the data
+# plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral)
+# plt.show()
 
 
 def layer_sizes(X, Y):
@@ -117,6 +138,7 @@ def nn_model(X, Y, n_h, num_iterations=10000, print_cost=False):
     W2 = parameters['W2']
     b2 = parameters['b2']
 
+    costs = []
     for i in range(0, num_iterations):
         A2, cache = forward_propagation(X, parameters)
 
@@ -127,9 +149,10 @@ def nn_model(X, Y, n_h, num_iterations=10000, print_cost=False):
         parameters = update_parameters(parameters, grads, learning_rate=0.05)
 
         if print_cost and i % 1000 == 0:
+            costs.append(cost)
             print("Cost after iteration %i: %f" % (i, cost))
 
-    return parameters
+    return parameters, costs
 
 
 def predict(parameters, X):
@@ -138,13 +161,19 @@ def predict(parameters, X):
     return predictions
 
 
-parameters = nn_model(X, Y, n_h=4, num_iterations=20000, print_cost=True)
+parameters, costs = nn_model(X, Y, n_h=20, num_iterations=50000, print_cost=True)
+predictions = predict(parameters, X)
+print('Accuracy: %d' % float((np.dot(Y, predictions.T) + np.dot(1 - Y, 1 - predictions.T)) / float(Y.size) * 100) + '%')
+
+costs = np.squeeze(costs)
+plt.plot(costs)
+plt.ylabel('cost')
+plt.xlabel('iterations')
+plt.show()
 
 plot_decision_boundary(lambda x: predict(parameters, x.T), X, Y)
 plt.title("Decision Boundary for hidden layer size " + str(4))
 
-predictions = predict(parameters, X)
-print('Accuracy: %d' % float((np.dot(Y, predictions.T) + np.dot(1 - Y, 1 - predictions.T)) / float(Y.size) * 100) + '%')
 
 # plt.figure(figsize=(16, 32))
 # hidden_layer_sizes = [1, 2, 3, 4, 5, 20, 50]
@@ -156,23 +185,3 @@ print('Accuracy: %d' % float((np.dot(Y, predictions.T) + np.dot(1 - Y, 1 - predi
 #     predictions = predict(parameters, X)
 #     accuracy = float((np.dot(Y, predictions.T) + np.dot(1 - Y, 1 - predictions.T)) / float(Y.size) * 100)
 #     print("Accuracy for {} hidden units: {} %".format(n_h, accuracy))
-
-noisy_circles, noisy_moons, blobs, gaussian_quantiles, no_structure = load_extra_datasets()
-
-datasets = {"noisy_circles": noisy_circles,
-            "noisy_moons": noisy_moons,
-            "blobs": blobs,
-            "gaussian_quantiles": gaussian_quantiles}
-
-dataset = "noisy_moons"
-
-X, Y = datasets[dataset]
-X, Y = X.T, Y.reshape(1, Y.shape[0])
-
-# make blobs binary
-if dataset == "blobs":
-    Y = Y % 2
-
-# Visualize the data
-plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral)
-plt.show()
