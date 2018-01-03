@@ -1,5 +1,6 @@
 import numpy as np
 from sample_data import load_train_data, load_test_data
+import matplotlib.pyplot as plt
 
 
 def sigmoid(Z):
@@ -27,9 +28,9 @@ def relu_forward(dA, cache):
 def initialize_parameters(n_x, n_h, n_y):
     parameters = {}
 
-    parameters['W1'] = np.random.randn(n_h, n_x)
+    parameters['W1'] = np.random.randn(n_h, n_x) * 0.01
     parameters['b1'] = np.zeros((n_h, 1))
-    parameters['W2'] = np.random.randn(n_y, n_h)
+    parameters['W2'] = np.random.randn(n_y, n_h) * 0.01
     parameters['b2'] = np.zeros((n_y, 1))
 
     return parameters
@@ -81,9 +82,9 @@ def predict(X, parameters, Y):
     A1, _ = linear_activation_forward(X, W1, b1, activation='relu')
     A2, _ = linear_activation_forward(A1, W2, b2, activation='sigmoid')
 
-    Y_hat = A2 >= 0.5
+    Y_hat = (A2 >= 0.5) * 1
     accuracy = np.mean(Y_hat == Y)
-    return accuracy
+    return Y_hat, accuracy
 
 
 def two_layer_model(X, Y, parameters, num_iteration, learing_rate=0.05):
@@ -96,15 +97,11 @@ def two_layer_model(X, Y, parameters, num_iteration, learing_rate=0.05):
         A1, cache1 = linear_activation_forward(X, W1, b1, activation='relu')
         A2, cache2 = linear_activation_forward(A1, W2, b2, activation='sigmoid')
 
-        accuracy = predict(X, parameters, Y)
+        _, accuracy = predict(X, parameters, Y)
         print("train accuracy = ", accuracy)
 
-        # dA2 = -(np.divide(Y, A2) - np.divide(1 - Y, 1 - A2))
-        # dA1, dW2, db2 = linear_activation_backward(dA2, cache2, activation='sigmoid')
-        dZ2 = A2 - Y
-        dW2 = np.dot(dZ2, A1.T) / m
-        db2 = np.sum(dZ2, axis=1, keepdims=True) / m
-        dA1 = np.dot(W2.T, dZ2)
+        dA2 = -(np.divide(Y, A2) - np.divide(1 - Y, 1 - A2))
+        dA1, dW2, db2 = linear_activation_backward(dA2, cache2, activation='sigmoid')
         _, dW1, db1 = linear_activation_backward(dA1, cache1, activation='relu')
 
         W1 -= learing_rate * dW1
@@ -115,12 +112,52 @@ def two_layer_model(X, Y, parameters, num_iteration, learing_rate=0.05):
     return parameters
 
 
+def plot(X, Y, parameters):
+    W1 = parameters['W1']
+    b1 = parameters['b1']
+    W2 = parameters['W2']
+    b2 = parameters['b2']
+    m = X.shape[1]
+
+    x1 = []
+    y1 = []
+    x2 = []
+    y2 = []
+    for i in range(X.shape[1]):
+        if Y[0, i] == 1:
+            x1.append(X[0, i])
+            y1.append(X[1, i])
+        else:
+            x2.append(X[0, i])
+            y2.append(X[1, i])
+    # plt.scatter(x1, y1, c='red')
+    # plt.scatter(x2, y2, c='blue')
+    plt.scatter(X[0, :], X[1, :])
+
+    x_min, x_max = X[0, :].min() - 1, X[0, :].max() + 1
+    y_min, y_max = X[1, :].min() - 1, X[1, :].max() + 1
+    h = 0.01
+    # Generate a grid of points with distance h between them
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    # A1, _ = linear_activation_forward(X, W1, b1, activation='relu')
+    # Z = Y.reshape(xx.shape)
+    # plt.contourf(xx, yy, Z)
+    xx = np.array([[1, 1, 1], [2, 2, 2]])
+    print(xx.ravel())
+    print(np.c_[xx.ravel(), yy.ravel()])
+    print('xx = ', xx.shape)
+    plt.show()
+
+
 X, Y = load_train_data()
+
 X_test, Y_test = load_test_data()
 
 # print(X, Y)
 parameters = initialize_parameters(X.shape[0], 10, Y.shape[0])
 parameters = two_layer_model(X, Y, parameters, 200, 0.005)
 
-test_accuracy = predict(X_test, parameters, Y_test)
+Y_hat, test_accuracy = predict(X_test, parameters, Y_test)
 print("test accuracy = ", test_accuracy)
+
+# plot(X_test, Y_hat, parameters)
