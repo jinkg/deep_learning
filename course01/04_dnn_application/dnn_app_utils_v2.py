@@ -198,7 +198,7 @@ def L_model_forward(X, parameters):
                                              activation="relu")
         caches.append(cache)
 
-    AL, cache = linear_activation_forward(A, parameters['W', str(L)], parameters['b' + str(L)], activation="sigmoid")
+    AL, cache = linear_activation_forward(A, parameters["W" + str(L)], parameters['b' + str(L)], activation="sigmoid")
     caches.append(cache)
 
     assert (AL.shape == (1, X.shape[1]))
@@ -275,18 +275,24 @@ def update_parameters(parameters, grads, learning_rate):
 
 def predict(X, y, parameters):
     m = X.shape[1]
-    n = len(parameters)
+    n = len(parameters) // 2  # number of layers in the neural network
     p = np.zeros((1, m))
 
+    # Forward propagation
     probas, caches = L_model_forward(X, parameters)
 
+    # convert probas to 0/1 predictions
     for i in range(0, probas.shape[1]):
         if probas[0, i] > 0.5:
-            p[0:i] = 1
+            p[0, i] = 1
         else:
-            p[0:i] = 0
+            p[0, i] = 0
 
+    # print results
+    # print ("predictions: " + str(p))
+    # print ("true labels: " + str(y))
     print("Accuracy: " + str(np.sum((p == y) / m)))
+
     return p
 
 
