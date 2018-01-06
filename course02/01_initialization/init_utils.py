@@ -107,7 +107,7 @@ def load_cat_dataset():
     return train_set_x, train_set_y, test_set_x, test_set_y, classes
 
 
-def predcit(X, y, parameters):
+def predict(X, y, parameters):
     m = X.shape[1]
     p = np.zeros((1, m), dtype=np.int)
 
