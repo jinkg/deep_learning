@@ -53,7 +53,7 @@ def random_mini_batches(X, Y, mini_batch_size=64, seed=0):
 
 
 def model(X, Y, layers_dims, optimizer, learning_rate=0.0007, mini_batch_size=64, beta=0.9,
-          beta1=0.9, beta2=0.999, epsilon=1e-8, num_epochs=10000, print_cost=True):
+          beta1=0.9, beta2=0.999, epsilon=1e-8, num_epochs=5000, print_cost=True):
     L = len(layers_dims)
     costs = []
     t = 0
