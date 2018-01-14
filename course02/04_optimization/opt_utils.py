@@ -77,7 +77,7 @@ def initialize_parameters(layer_dims):
         parameters['b' + str(l)] = np.zeros((layer_dims[l], 1))
 
         assert (parameters['W' + str(l)].shape == (layer_dims[l], layer_dims[l - 1]))
-        assert (parameters['W' + str(l)].shape == (layer_dims[l], 1))
+        assert (parameters['b' + str(l)].shape == (layer_dims[l], 1))
 
     return parameters
 
@@ -265,5 +265,6 @@ def load_dataset():
     plt.scatter(train_X[:, 0], train_X[:, 1], c=train_Y, s=40, cmap=plt.cm.Spectral);
     train_X = train_X.T
     train_Y = train_Y.reshape((1, train_Y.shape[0]))
+    plt.show()
 
     return train_X, train_Y
