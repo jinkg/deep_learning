@@ -16,6 +16,8 @@ from yad2k.models.keras_yolo import yolo_head, yolo_boxes_to_corners, preprocess
 from my_car_detection_model import *
 
 import os
+
+# use cpu
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -73,4 +75,3 @@ def predict(sess, image_file):
 
 
 out_scores, out_boxes, out_classes = predict(sess, "street4.jpg")
-
