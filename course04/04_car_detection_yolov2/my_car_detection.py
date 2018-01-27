@@ -15,7 +15,9 @@ from yolo_utils import read_classes, read_anchors, generate_colors, preprocess_i
 from yad2k.models.keras_yolo import yolo_head, yolo_boxes_to_corners, preprocess_true_boxes, yolo_loss, yolo_body
 from my_car_detection_model import *
 
-CUDA_VISIBLE_DEVICES = ""
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 sess = K.get_session()
 
@@ -23,9 +25,7 @@ class_names = read_classes("model_data/coco_classes.txt")
 anchors = read_anchors("model_data/yolo_anchors.txt")
 image_shape = (720., 1280.)
 
-print(111)
 yolo_model = load_model("model_data/yolo.h5")
-print(111)
 yolo_model.summary()
 
 yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
@@ -72,5 +72,5 @@ def predict(sess, image_file):
     return out_scores, out_boxes, out_classes
 
 
-out_scores, out_boxes, out_classes = predict(sess, "street2.jpg")
-print(111)
+out_scores, out_boxes, out_classes = predict(sess, "street4.jpg")
+

@@ -100,3 +100,11 @@ ENV/
 # mypy
 .mypy_cache/
 
+.idea/deep_learning.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+course04/03_residual_network/ResNet50.h5
+course04/04_car_detection_yolov2/model_data/yolo.h5
+course04/06_neural_style_transfer/pretrained-model/imagenet-vgg-verydeep-19.mat
