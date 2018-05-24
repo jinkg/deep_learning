@@ -103,7 +103,7 @@ s0 = np.zeros((m, n_s))
 c0 = np.zeros((m, n_s))
 outputs = list(Yoh.swapaxes(0, 1))
 
-model.fit([Xoh, s0, c0], outputs, epochs=500, batch_size=128)
+model.fit([Xoh, s0, c0], outputs, epochs=10, batch_size=100)
 
 # model.load_weights('models/model.h5')
 
